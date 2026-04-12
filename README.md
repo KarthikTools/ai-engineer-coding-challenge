@@ -162,3 +162,9 @@ frontend/
 
 **Backend:** fastapi, uvicorn, pydantic, pytest, httpx  
 **Frontend:** react, react-dom, vite, typescript
+
+---
+
+## AI Tools Used
+
+GitHub Copilot was used during development to help with boilerplate code and unit test scaffolding. All generated code was reviewed, understood, and adjusted by hand. The architecture, design decisions, and core logic are my own.
