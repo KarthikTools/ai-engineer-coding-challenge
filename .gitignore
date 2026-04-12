@@ -1,0 +1,59 @@
+# ── Python ───────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+backend/venv/
+ENV/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# ── Node / Frontend ─────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# ── IDE / Editor ────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# ── OS Generated ────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ── Environment / Secrets ───────────────────────
+.env
+.env.local
+.env.*.local
+*.log
+
+# ── Tooling / Misc ──────────────────────────────
+.playwright-mcp/
+*.pdf

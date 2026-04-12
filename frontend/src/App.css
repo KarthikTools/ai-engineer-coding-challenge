@@ -1,0 +1,506 @@
+/* ────────────────────────────────────────────────────
+   Task Agent — Application Styles
+   Clean, modern design with clear visual hierarchy
+   ──────────────────────────────────────────────────── */
+
+/* ── Layout ──────────────────────────────────────── */
+
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: #1a1a2e;
+  background: #f8f9fc;
+}
+
+.app-header {
+  text-align: center;
+  padding: 24px 0 16px;
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #1a1a2e;
+}
+
+.subtitle {
+  color: #6b7280;
+  margin: 4px 0 0;
+  font-size: 0.95rem;
+}
+
+.app-main {
+  flex: 1;
+}
+
+.app-footer {
+  text-align: center;
+  padding: 24px 0 8px;
+  color: #9ca3af;
+  font-size: 0.8rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 32px;
+}
+
+/* ── Tool List ───────────────────────────────────── */
+
+.tool-list {
+  margin-bottom: 20px;
+}
+
+.tool-list h4 {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tool-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.tool-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.tool-chip strong {
+  display: block;
+  font-size: 0.82rem;
+  color: #1a1a2e;
+}
+
+.tool-chip small {
+  color: #6b7280;
+  font-size: 0.75rem;
+}
+
+.tool-icon {
+  font-size: 1.4rem;
+}
+
+/* ── Task Input ──────────────────────────────────── */
+
+.task-input-container {
+  margin-bottom: 24px;
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-row {
+  display: flex;
+  gap: 10px;
+}
+
+.task-input {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s;
+  background: white;
+}
+
+.task-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.task-input:disabled {
+  background: #f3f4f6;
+}
+
+.submit-btn {
+  padding: 12px 24px;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+  min-width: 130px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #4f46e5;
+  transform: translateY(-1px);
+}
+
+.submit-btn:disabled {
+  background: #c7d2fe;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ─────────────────────────────────────── */
+
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Quick Actions ───────────────────────────────── */
+
+.quick-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.quick-label {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.quick-btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  background: #eef2ff;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.quick-btn:hover:not(:disabled) {
+  background: #c7d2fe;
+}
+
+.quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Error Banner ────────────────────────────────── */
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  color: #991b1b;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.error-banner button {
+  background: none;
+  border: none;
+  color: #991b1b;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0 4px;
+}
+
+/* ── Task History ────────────────────────────────── */
+
+.task-history {
+  margin-top: 8px;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.history-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1a1a2e;
+}
+
+.export-btn {
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  background: white;
+  color: #4338ca;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.export-btn:hover {
+  background: #eef2ff;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 16px;
+  color: #9ca3af;
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Task Card ───────────────────────────────────── */
+
+.task-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.task-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.task-card-latest {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+}
+
+.task-card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.task-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.status-badge {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.badge-success {
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.badge-error {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+.badge-pending {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.tool-badge {
+  font-size: 0.78rem;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.task-time {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-left: auto;
+}
+
+/* ── Task Card Body ──────────────────────────────── */
+
+.task-card-body {
+  padding: 12px 16px;
+}
+
+.task-field {
+  margin-bottom: 8px;
+}
+
+.task-field:last-child {
+  margin-bottom: 0;
+}
+
+.task-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.task-input-display {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.task-output {
+  margin: 4px 0 0;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  color: #1e293b;
+  overflow-x: auto;
+}
+
+.task-error {
+  margin: 4px 0 0;
+  color: #dc2626;
+  font-size: 0.88rem;
+}
+
+/* ── Task Card Footer / Trace Toggle ─────────────── */
+
+.task-card-footer {
+  border-top: 1px solid #f3f4f6;
+  padding: 0;
+}
+
+.trace-toggle {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #6366f1;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.trace-toggle:hover {
+  background: #f8fafc;
+}
+
+/* ── Execution Trace ─────────────────────────────── */
+
+.execution-trace {
+  padding: 0 16px 14px;
+}
+
+.trace-title {
+  font-size: 0.85rem;
+  color: #374151;
+  margin: 0 0 10px;
+}
+
+.trace-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.trace-step {
+  display: flex;
+  gap: 12px;
+  min-height: 36px;
+}
+
+.step-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 28px;
+  flex-shrink: 0;
+}
+
+.step-number {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.step-line {
+  flex: 1;
+  width: 2px;
+  background: #e5e7eb;
+  min-height: 8px;
+}
+
+.trace-step:last-child .step-line {
+  display: none;
+}
+
+.step-content {
+  padding-bottom: 8px;
+  flex: 1;
+}
+
+.step-description {
+  margin: 2px 0 0;
+  font-size: 0.83rem;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .input-row {
+    flex-direction: column;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+
+  .tool-chips {
+    flex-direction: column;
+  }
+
+  .tool-chip {
+    min-width: unset;
+  }
+}
