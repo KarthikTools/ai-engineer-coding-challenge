@@ -1,0 +1,97 @@
+You are a senior RAG engineer doing a READ-ONLY audit of this codebase.
+Do NOT change any code until I approve a fix plan.
+
+## Context
+This is an existing RAG application. Target: 10M+ documents, <2s end-to-end
+latency, accurate citations, consistent answers.
+Current problems:
+1. End-to-end latency is 8+ seconds.
+2. Retrieval returns top 25 chunks.
+3. The same question gives different answers on each run. We cannot trust it
+   in production.
+
+## Rules
+- Trace the ACTUAL code path. Start at the API entry point and follow the
+  query until the answer is returned. Then do the same for ingestion.
+- For every finding, give the file path, function name, and line numbers.
+- Never guess. If a feature does not exist in the code, mark it NOT FOUND.
+  Do not assume a library does it by default unless you show the config.
+- Explain each finding in simple English, so I can defend it in a code
+  review without AI help.
+
+## Part 1: Criteria checklist
+Mark each item PASS / PARTIAL / FAIL / NOT FOUND, with evidence.
+
+Ingestion:
+1. Parsing for PDF, DOCX, and web pages (which libraries? are tables and
+   headers kept?)
+2. Deduplication (exact hash? near-duplicate detection? at document or
+   chunk level?)
+3. Chunking method (fixed-size or semantic/structure-aware? chunk size and
+   overlap values?)
+4. Metadata on every chunk: tenant_id, access_permissions, version,
+   timestamp, source_url
+5. Embeddings generated in batches (batch size? retry on failure?)
+6. ANN index type and parameters (HNSW/IVF? M, ef_construction, ef_search,
+   nprobe?)
+
+Query serving:
+7. Hybrid retrieval: is BM25 present? Is dense search present? How are the
+   results merged (RRF, weighted score)? Do score ties have a stable
+   tie-breaker?
+8. Metadata filters applied BEFORE or AFTER vector search? (post-filtering
+   is a FAIL for multi-tenant)
+9. Reranker: which model (cross-encoder or LLM)? How many candidates go in?
+   How many come out?
+10. How many chunks go into the LLM prompt, and the total token count of
+    that context
+11. Caching: query cache, embedding cache, retrieval result cache
+    (key design? TTL?)
+12. Streaming of the LLM response to the client
+
+Citations:
+13. Stable document IDs and chunk IDs (do they survive re-ingestion, or are
+    they random UUIDs or row numbers that change?)
+14. Character offsets (start/end) stored per chunk
+15. Does the prompt force the LLM to cite chunk IDs? Is each citation
+    checked after generation to confirm the cited chunk really supports the
+    claim?
+
+## Part 2: Latency investigation (the 8s problem)
+- Add temporary timing logs (or tell me exactly where to add them) for each
+  stage: query embedding, BM25, vector search, merge, rerank, prompt build,
+  LLM time-to-first-token, LLM total time, post-processing.
+- Find calls that run one after another but could run in parallel
+  (for example, BM25 and dense search).
+- Find network calls inside loops, models loaded on every request, cold
+  starts, and missing connection pooling.
+- Give a latency budget table: current ms per stage vs target ms per stage
+  to reach <2s.
+- Recommend the right numbers: candidates retrieved per method, rerank pool
+  size, and final top-k for the LLM (explain why 25 is or is not right).
+
+## Part 3: Determinism investigation (the different-answers problem)
+Run the same query 5 times and compare at EACH stage:
+a) query embedding vector (identical?)
+b) BM25 result IDs and order
+c) dense result IDs and order
+d) merged list order
+e) reranked list order
+f) final prompt text (diff it exactly)
+g) final answer
+Report the FIRST stage where the output changes. That is the root cause.
+Also check: LLM temperature, top_p, and seed; model version pinned or
+"latest"; unstable sort or tie-breaking; async results gathered in
+completion order; dict/set iteration order; timestamps or random values
+inside the prompt; ANN ef_search too low; index being rebuilt while serving.
+
+## Output format
+1. Scorecard table: # | Criterion | Status | Evidence (file:line) | Risk
+2. Top 5 problems ranked by impact on latency, trust, and accuracy
+3. Latency budget table (current vs target)
+4. Determinism root cause, with proof from the 5-run comparison
+5. Fix plan: for each fix give what to change, where, expected gain, effort
+   (S/M/L), and the risk of breaking something. Order: quick wins first.
+6. Questions you could not answer from the code alone
+
+Stop after the report and wait for my approval before changing any code.
