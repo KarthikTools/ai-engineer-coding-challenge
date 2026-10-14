@@ -1,0 +1,113 @@
+You are a senior AI engineer adding production-grade observability to this
+existing RAG application using Langfuse. Langfuse is already installed but
+not used well. Work in phases. After each phase, stop, show me the diff,
+and explain it in simple English so I can defend it in a code review.
+
+## Phase 0: Discover (read-only, no changes)
+- Find the installed Langfuse SDK version (Python or JS) and how it is
+  configured today (keys, host, env vars, where the client is created).
+- Use the API of THAT installed version. Check the official Langfuse docs
+  for it. Do not mix v2 and v3 syntax.
+- Map the full request path: API entry → query embedding → BM25 → vector
+  search → merge → rerank → prompt build → LLM call → post-processing →
+  response. List every function with file:line.
+- Report what is already traced and what is missing.
+
+## Phase 1: Trace every request (one trace per user question)
+Create ONE trace per request, with a child span for EACH stage:
+  embed_query, bm25_search, vector_search, merge_results, rerank,
+  build_prompt, llm_generation, citation_check, post_process
+On the trace, set: user_id (hashed), session_id, tenant_id, environment
+(dev/staging/prod), release (git commit or app version), and tags.
+Each span must record its own duration, so I can see which stage causes
+the 8s latency.
+Rules:
+- Tracing must NEVER break or slow the request. Wrap it in try/except,
+  send data in the background, and call flush on app shutdown.
+- Mask PII before sending (emails, phone numbers, account numbers, names).
+  Use the Langfuse mask function or our own masking helper.
+- Use one shared Langfuse client. Do not create one per request.
+
+## Phase 2: Store the retrieval context (video step 3)
+For each retrieval span, log as structured metadata (not one big string):
+- query text (masked), filters applied, and whether filters ran
+  before or after search
+- for BM25, vector, merged, and reranked results: list of
+  {doc_id, chunk_id, score, rank, source_name, version}
+- top_k values used at each stage
+- final chunk IDs sent to the LLM, in the exact order used in the prompt
+- total context tokens
+This lets me compare runs of the same question and find where the
+results start to differ.
+
+## Phase 3: Track system metrics (video step 4)
+- Log the LLM call as a "generation", with model name (pinned version),
+  model parameters (temperature, top_p, seed, max_tokens), input tokens,
+  output tokens, and cost. Confirm Langfuse calculates cost for our model;
+  if not, add a custom model price definition.
+- Log time-to-first-token and total generation time.
+- Log errors, retries, timeouts, and failed tool calls as span levels
+  (ERROR / WARNING) with the error message.
+
+## Phase 4: Prompt versioning
+- Move the system prompt and RAG prompt template into Langfuse Prompt
+  Management. Fetch them by name + label ("production").
+- Link each generation to the prompt name and version it used, so I can
+  compare prompt versions on quality, cost, and latency.
+- Cache the fetched prompt locally with a fallback, so a Langfuse outage
+  does not break the app.
+
+## Phase 5: Score answer quality (video step 5)
+Attach scores to each trace:
+- user_feedback: thumbs up/down from the UI (add an endpoint if missing,
+  linked by trace_id)
+- faithfulness: is every claim supported by the retrieved chunks?
+- answer_relevance: did it answer the actual question?
+- context_relevance: were the retrieved chunks relevant?
+- citation_valid: does every cited chunk_id exist in the retrieved set?
+  (a deterministic code check, no LLM needed)
+- safety: harmful content or PII leaked in the answer?
+Use Langfuse LLM-as-a-judge evaluators where possible, so the scoring
+runs async and does NOT add latency to the user request. Use code-based
+scores for cheap deterministic checks.
+
+## Phase 6: Flag bad answers (video step 6)
+Implement these flags as scores or tags on the trace:
+1. no_source: zero chunks retrieved, but the answer contains factual or
+   policy claims
+2. contradiction: the answer contradicts the retrieved chunk
+   (from the faithfulness judge)
+3. cost_spike: cost per request > 2x the rolling average (make the
+   threshold configurable)
+4. latency_breach: total latency > 2s
+5. prompt_regression: a new prompt version scores worse than the
+   previous version on the evaluation dataset
+6. invalid_citation: a citation points to a chunk that was not retrieved
+
+## Phase 7: "Bad Answers" view (video step 7)
+Make every flagged trace easy to filter in Langfuse, and make sure each one
+shows: user question, retrieved chunks, final answer, prompt version,
+model, cost, latency, faithfulness score, user feedback, and failure
+reason. Tell me which saved filters or dashboard widgets to create in the
+Langfuse UI, step by step.
+For alerts: check what this Langfuse version supports natively. If it
+cannot alert on these flags, write a small scheduled script that queries
+the Langfuse API and sends an alert (email/Slack) when flag counts pass
+a threshold.
+
+## Phase 8: Fix and retest loop (video step 8)
+- Create a Langfuse Dataset from 20-50 real questions with known good
+  answers (start from flagged traces plus thumbs-down cases).
+- Write a script that runs the dataset against the current pipeline as a
+  Langfuse experiment and records all the scores, so I can compare
+  before/after any change to chunking, retriever, reranker, prompt,
+  or model.
+- Add a determinism test: run each dataset question 5 times and report
+  whether the retrieved chunk IDs and the answers are identical.
+
+## Output after each phase
+1. What changed (files and functions)
+2. Why, in simple English
+3. How to verify it: what I should see in the Langfuse UI
+4. Any risk to production behavior
+Then wait for my "continue" before the next phase.
