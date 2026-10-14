@@ -95,3 +95,30 @@ inside the prompt; ANN ef_search too low; index being rebuilt while serving.
 6. Questions you could not answer from the code alone
 
 Stop after the report and wait for my approval before changing any code.
+
+
+Great audit. Before I click Keep on the pending diff (+419 -83):
+list every change in it, file by file, in simple English. Undo
+anything not in the approved list below.
+
+Approved now (code only, one commit each, rerun the 5x probe after each):
+1. Keyword search: add a deterministic tie-breaker (id) AND stop the
+   AND->OR rewrite, or drop keyword results below a minimum score.
+   Prove with the vacation query: same chunk IDs 5/5, and no unrelated
+   policies (like AML) in the top 15.
+2. Embedding client: connection pooling (shared session), LRU cache,
+   shorter timeout.
+3. Run keyword and dense search in parallel.
+4. Fix the stale comment about 15 -> 30 chunks.
+5. Shadow-mode citation check: log only, do not change the response.
+
+Not yet:
+- Streaming: first show me what format ecs0-ask-ai-iframe expects.
+  Build it behind a feature flag, default off.
+- Reranker and top-k 15 -> 8: after ranking is fixed.
+
+For the DBA, write a short ticket with evidence:
+- HNSW index (check the column dims first: pgvector cannot index plain
+  vector above 2000 dims, so 3072 needs halfvec or fewer dims)
+- GIN index for full-text search
+- Re-check everything against the prod schema, not my local .env DB
